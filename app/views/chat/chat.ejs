@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Um chat simples com nodejs, bem estruturado">
+    <meta name="author" content="Casiano">
+   
+    <title>Chat com NodeJS</title>
+
+    <!-- Bootstrap core CSS -->
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet">
+   <link rel="stylesheet" href="css/chat.css">
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="/">Chat com Nodejs</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Inicio <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+				<% for(var i = 0; i<user.length; i++){ %>
+					<a class="nav-link" href="/users/user/<%= user[i].id %>">Meu Perfil</a>
+				<% } %>
+		  </li>
+		  <li class="nav-item">
+				<% for(var i = 0; i<user.length; i++){ %>
+					<a class="nav-link" href="/users/logout/<%= user[i].id %>">Sair</a>
+				<% } %>
+			  </li>
+		</ul>
+      </div>
+    </nav>
+
+    <main role="main" class="container" id="container">
+		
+		<br>
+		<br>
+		<br>
+		<div id="msgBox">
+			<% for(var i = 0; i<user.length; i++){ %>
+				<% for(var j = 0; j<message.length; j++){  %>
+					<% if(user[i].id != message[j].idUser){ %>
+						<div class="container msg">
+							<h5><%= message[j].nick %></h5>
+							<hr>
+							<p><%= message[j].msg %></p>
+
+							<span class="time-right"><%= message[j].msgTime %></span>
+					</div>
+					<% }else{ %>
+							<div class="container msg darker">
+								<p><%= message[j].msg %></p>
+								<span class="time-left"><%= message[j].msgTime %></span>
+							</div>
+						<% } %>
+					<% } %>
+				<% }%>
+
+
+			</div>
+	
+		<div id="textbox">
+			<form  id="formmsg" class="form-inline my-2 my-lg-0" method="post">
+				<% for(var i = 0; i<user.length; i++){ %>
+					<input type="hidden" id="userId" name="id" value="<%= user[i].id %>">
+					<input type="hidden" id="userNick" name="id" value="<%= user[i].nick %>">
+					
+					<% } %>
+				<input type="text" class="form-control col col-xs-1 mr-sm-1" name="msg" id="txtmsg" placeholder="Digite uma mensagem" autofocus>
+				<input type="submit" value="Enviar" id="btnEnviar">
+			</form>
+		</div>
+
+    </main><!-- /.container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="js/chat-client-core.js"></script>
+	</body>
+</html>

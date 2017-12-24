@@ -1,0 +1,84 @@
+		html, body {
+			background: #ebebeb;
+			height: 100%;
+		}
+		#container {
+			background-color: white;
+			margin-bottom: 0;
+			height: 85%;
+			border-radius:10px;
+
+		}
+		#textbox{
+			display: block;
+			margin: auto;
+			margin-top:10%;
+			width: 100%;	
+		}
+
+		#msgBox{
+			width:100%;
+			display: block;
+			margin: auto;
+			height: 60%;
+			overflow: auto;
+			padding: 10px;
+		}
+
+		/* Chat containers */
+		.msg {
+				border: 2px solid #dedede;
+				background-color: #f1f1f1;
+				border-radius: 5px;
+				padding: 10px;
+				margin: 10px 0;
+			}
+
+			/* Darker chat container */
+			.darker {
+					border-color: #ccc;
+					background-color: #ddd;
+			}
+
+			.login{
+				
+				background-color: #f1da55;
+				padding: 0;
+				margin: 10px 0;
+				
+			}
+
+			/* Clear floats */
+			.container::after {
+					content: "";
+					clear: both;
+					display: table;
+			}
+
+			/* Style images */
+			.container img {
+					float: left;
+					max-width: 60px;
+					width: 100%;
+					margin-right: 20px;
+					border-radius: 50%;
+			}
+
+			/* Style the right image */
+			.container img.right {
+					float: right;
+					margin-left: 20px;
+					margin-right:0;
+			}
+
+			/* Style time text */
+			.time-right {
+					float: right;
+					color: #aaa;
+			}
+
+			/* Style time text */
+			.time-left {
+					float: left;
+					color: #999;
+			}

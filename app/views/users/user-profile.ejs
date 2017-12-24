@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Um chat simples com nodejs, bem estruturado">
+    <meta name="author" content="Casiano">
+   
+    <title>Chat com NodeJS</title>
+    <!-- Bootstrap core CSS -->
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      html, body {
+        background: #ebebeb;
+        height: 100%;
+      }
+
+      
+		#content{
+			display: block;
+			margin: auto;
+			padding: 10px;
+  
+      background-color: white;
+      padding-top:15%;
+			padding-bottom: 10%;
+			height: 100%;
+			border-radius:10px;
+
+    }
+
+    </style>
+  
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="/">Chat com Nodejs</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item ">
+            <a class="nav-link" href="/">Inicio</a>
+          </li>
+          <% for(var i = 0; i<user.length; i++){ %>
+            <% if(user[i].id == finded[0].id){ %>
+              <li class="nav-item active">
+                <a class="nav-link" href="/users/user/<%= user[i].id %>">Meu Perfil <span class="sr-only">(current)</span></a>
+              </li>
+            <% }else{ %>
+              <li class="nav-item">
+                <a class="nav-link" href="/users/user/<%= user[i].id %>">Meu Perfil</a>
+              </li>
+            <% } %>
+          <% } %>
+          
+		  <li class="nav-item">
+				<% for(var i = 0; i<user.length; i++){ %>
+					<a class="nav-link" href="/users/logout/<%= user[i].id %>">Sair</a>
+				<% } %>
+			  </li>
+		</ul>
+      </div>
+    </nav>
+
+    <main role="main" class="container" id="container">
+      <div id="content">
+        <% if(user[0].id == finded[0].id){ %>
+          <form action="" id="form-infos-user" method="post">
+            <h2 align="center">Meu Perfil</h2>
+            <label for="inputNick">Nome de Usuário:</label>
+          
+            <input type="text" name="nick" id="inputNick" class="form-control" placeholder="Nome de Usuário" value="<%= user[0].nick %>" required>
+            
+            <label for="inputPassword">Nova senha:</label>
+            <input type="password" name="new-password" id="inputNewPassword" placeholder="Senha Nova" class="form-control">
+            
+            <label for="confirm-password">Confirmar senha:</label>
+            <input type="password" name="confirm-password" id="inputConfirmPassword" placeholder="confirmar senha" class="form-control">
+            
+            <label for="old-password">Senha Antiga:</label>
+            <input type="password" name="old-password" id="inputOldPasswordPassword" placeholder="senha atual" class="form-control">
+            
+            <input type="hidden" name="oldPasswordHash" id="oldPasswordHash" value="<%= user[0].password %>">
+
+              <center style="margin-top: 10px;">
+                <button class="btn btn-lg btn-primary" type="submit">Atualizar Informações</button>
+              </center>
+            </form>
+          <% }else{%>
+            <h2 align="center">Perfil de <%= finded[0].nick %></h2>
+            <label for="nickUser">Nome de Usuário:</label>
+            <div id="nickUser" name="nickUser" class="form-control"><%= finded[0].nick %></div>
+          <% } %>
+      </div>
+
+    </main><!-- /.container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+  <script>
+   jQuery(function(){
+      jQuery('#form-infos-user').on('submit', function(event){
+        event.preventDefault();
+
+        var nick = jQuery('#inputNick').val();
+        var pass = jQuery('#inputNewPassword').val();
+        var confPass = jQuery('#inputConfirmPassword').val();
+        var oldPass = jQuery('#inputOldPasswordPassword').val();
+
+        if(pass == "" && confPass == ""){
+          pass = jQuery("#oldPasswordHash").val();
+        }else{
+          if(pass == confPass){
+            //cadastra
+          }else{
+            //mostra que senhas n conferem
+          }
+        }
+
+      });
+    });
+  </script>
+
+  </body>
+</html>
