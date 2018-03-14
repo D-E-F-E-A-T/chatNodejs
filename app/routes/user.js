@@ -2,6 +2,10 @@ const crypto = require('crypto');
 module.exports = function(app){
 	var sess;
 
+
+	/*	Route used to list all users
+	*   return json with a list of all users in database
+	*/
 	app.get('/users', function(req, resp){
 		var UserDAO = new app.infra.UserDAO(app);
 		UserDAO.read(function(erros, results){
@@ -28,6 +32,12 @@ module.exports = function(app){
 		});
 	});
 
+	/*
+	* Route used to get a single user
+	* This only works if there are session (user logged)
+	* return json that contain the infos of the user
+	* params id of user (example: 1543)
+	*/
 	app.get('/users/user/:id', function(req, resp){
 		var id = req.params.id;
 
@@ -63,6 +73,11 @@ module.exports = function(app){
 		}
 	});
 	
+	/*
+	* Route used to create a new user
+	* returns the data created, links of possibilities and redirect the user if is HTML for homepage
+	*
+	*/
 	app.post('/users/user', function(req, resp){
 		var user = req.body;
 
@@ -133,6 +148,11 @@ module.exports = function(app){
 		}
 	});
 
+
+	/*
+	* route used to update the user
+	*
+	*/
 	app.put('/users/user/:id', function(req, resp){
 		var user = req.params;
 		user.id = req.params.id;
@@ -161,6 +181,11 @@ module.exports = function(app){
 		});
 	});
 
+
+	/*
+	* route used to delete any user whe pass id
+	* return the result of the query
+	*/
 	app.delete('/users/user/:id', function(req, resp){
 		var id = req.params.id;
 
@@ -190,7 +215,9 @@ module.exports = function(app){
 		});
 	});
 
-	
+	/*
+	* route used to make login of any user
+	*/
 	app.post('/users/login', function(req, resp){
 		var user = req.body;
 		var UserDAO = new app.infra.UserDAO(app);
@@ -246,6 +273,10 @@ module.exports = function(app){
 		});
 	});
 
+
+	/*
+	* Route used to make logout of any user
+	*/
 	app.get('/users/logout/:id', function(req, resp){
 		sess = req.session;
 		if(sess.user){
