@@ -154,31 +154,101 @@ module.exports = function(app){
 	*
 	*/
 	app.put('/users/user/:id', function(req, resp){
-		var user = req.params;
-		user.id = req.params.id;
-
+		var user = req.body;
+		
 		var UserDAO = new app.infra.UserDAO(app);
-		UserDAO.update(user, function(err, result){
-			if(err){
-				resp.format({
-					html: function(){
-						resp.render('erros/500');
-					},
-					json: function(){
-						resp.status(500).json(err);
+	
+		if(user.oldPass == undefined){
+			UserDAO.update(user, function(err, result){	
+				if(err){
+					console.log(err);
+					resp.format({
+						html: function(){
+							resp.render('erros/500');
+						},
+						json: function(){
+							resp.status(500).json('error');
+						}
+					});
+				}else{
+					resp.format({
+						html: function(){
+							resp.redirect('/users/logout/'+id);
+						},
+						json: function(){
+							resp.status(200).json('ok');
+						}
+					});
+				}
+			});
+			
+		}else{
+			var oldPass = user.oldPass;
+			var oldPassHash = user.oldHash;
+
+			const hash = crypto.createHash('sha256');
+
+			hash.on('readable', function(){
+				const data = hash.read();
+				if(data){
+					oldPass = data.toString('hex');
+				
+				}
+			});
+	
+			hash.write(oldPass);
+			hash.end();
+
+			if(oldPass == oldPassHash){
+				const hashNewPass = crypto.createHash('sha256');
+				hashNewPass.on('readable', function(){
+					const data = hashNewPass.read();
+					if(data){
+						user.password = data.toString('hex');
+					}
+				});
+		
+				hashNewPass.write(user.password);
+				hashNewPass.end();
+
+				var userUpdate = {
+					id: user.id,
+					password: user.password,
+					nick: user.nick
+				}
+				UserDAO.update(userUpdate, function(err, result){	
+					if(err){
+						console.log(err);
+						resp.format({
+							html: function(){
+								resp.render('erros/500');
+							},
+							json: function(){
+								resp.status(500).json('error');
+							}
+						});
+					}else{
+						resp.format({
+							html: function(){
+								resp.redirect('/users/logout/'+id);
+							},
+							json: function(){
+								resp.status(200).json('ok');
+							}
+						});
 					}
 				});
 			}else{
 				resp.format({
 					html: function(){
-						resp.redirect('/users/logout/'+id);
+						resp.status(406).send();
 					},
 					json: function(){
-						resp.status(204).render();
+						resp.status(406).json('wrong pass');
 					}
-				})
+				});
 			}
-		});
+		}
 	});
 
 

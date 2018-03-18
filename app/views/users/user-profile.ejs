@@ -8,7 +8,7 @@
    
     <title>Chat com NodeJS</title>
     <!-- Bootstrap core CSS -->
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet">
+	  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
       html, body {
@@ -30,6 +30,19 @@
 
     }
 
+    .hide{
+      display:none;
+    }
+
+    .passDontMath {
+      color: red; 
+      float:right;
+    }
+
+    .passwordIncorrect{
+      color: red; 
+      float:right;
+    }
     </style>
   
   </head>
@@ -77,17 +90,17 @@
           
             <input type="text" name="nick" id="inputNick" class="form-control" placeholder="Nome de Usuário" value="<%= user[0].nick %>" required>
             
-            <label for="inputPassword">Nova senha:</label>
+            <label for="inputPassword">Nova senha:</label><p class="passDontMath hide">As senhas não são iguais</p>
             <input type="password" name="new-password" id="inputNewPassword" placeholder="Senha Nova" class="form-control">
             
-            <label for="confirm-password">Confirmar senha:</label>
+            <label for="confirm-password">Confirmar senha: </label><p class="passDontMath hide">As senhas não são iguais</p>
             <input type="password" name="confirm-password" id="inputConfirmPassword" placeholder="confirmar senha" class="form-control">
             
-            <label for="old-password">Senha Antiga:</label>
+            <label for="old-password">Senha Antiga:</label><p class="passwordIncorrect hide">A senha antiga está incorreta!</p>
             <input type="password" name="old-password" id="inputOldPasswordPassword" placeholder="senha atual" class="form-control">
             
             <input type="hidden" name="oldPasswordHash" id="oldPasswordHash" value="<%= user[0].password %>">
-
+            <input type="hidden" name="usrId" id="usrId" value="<%= user[0].id %>">
               <center style="margin-top: 10px;">
                 <button class="btn btn-lg btn-primary" type="submit">Atualizar Informações</button>
               </center>
@@ -110,6 +123,7 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
   <script>
    jQuery(function(){
+     
       jQuery('#form-infos-user').on('submit', function(event){
         event.preventDefault();
 
@@ -117,14 +131,54 @@
         var pass = jQuery('#inputNewPassword').val();
         var confPass = jQuery('#inputConfirmPassword').val();
         var oldPass = jQuery('#inputOldPasswordPassword').val();
+        var oldHash = jQuery('#oldPasswordHash').val();
+
+        var id = jQuery('#usrId').val();
 
         if(pass == "" && confPass == ""){
           pass = jQuery("#oldPasswordHash").val();
+
+          jQuery.ajax({
+            type: 'PUT',
+            url: '/users/user/'+id,
+            data: {id: id, nick: nick, password: pass},
+            dataType: 'json',
+            success: function(response){
+              if(response == 'ok'){
+                  window.location = '/users/logout/'+id;
+              }else{
+                alert('Ocorreu um erro ao atualizar!');
+              }
+            }
+          });
+        
         }else{
-          if(pass == confPass){
-            //cadastra
-          }else{
-            //mostra que senhas n conferem
+          if(pass != confPass){
+            jQuery('.passDontMath').removeClass('hide');
+          }else{ 
+            if(!jQuery('.passDontMath').hasClass('hide')){
+              jQuery('.passDontMath').addClass('hide');
+            }
+
+            jQuery.ajax({
+                type: 'PUT',
+                url: '/users/user/'+id,
+                data: {id: id, nick: nick, password: pass, oldPass: oldPass, oldHash: oldHash},
+                dataType: 'json',
+                success: function(response){
+                 
+                  if(response == 'ok'){
+                    window.location = '/users/logout/'+id;
+                  }
+                },
+                error: function(response){
+                  if(response.responseJSON == 'wrong pass'){
+                    jQuery('.passwordIncorrect').removeClass('hide');
+                  }else{
+                    alert('Ocorreu um problema ao atualizar');
+                  }
+                }
+              });
           }
         }
 
