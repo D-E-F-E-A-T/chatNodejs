@@ -24,6 +24,7 @@ module.exports = function(){
 
 	load('routes', {cwd: 'app'})
 	.then('infra')
+	.then('services')
 	.into(app);
 
 	app.use(function(req, resp, next){

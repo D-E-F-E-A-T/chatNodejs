@@ -79,73 +79,92 @@ module.exports = function(app){
 	*
 	*/
 	app.post('/users/user', function(req, resp){
-		var user = req.body;
+		var body = req.body;
+	
+		var authKey = body.keyAuth;
 
-		req.assert('nick', 'Nickname obrigatorio!').notEmpty();
-		req.assert('password', 'Senha obrigatoria').notEmpty();
+		var locksmithClient = new app.services.locksmithClient();
+		locksmithClient.useKey(authKey, function(exception, request, result, returned){
 
-
-		const hash = crypto.createHash('sha256');
-		
-		hash.on('readable', function(){
-			const data = hash.read();
-			if(data){
-				user.password = data.toString('hex');
-			
-			}
-		});
-
-		hash.write(user.password);
-		hash.end();
-				
-
-		var errors = req.validationErrors();
-		if(errors){
-			resp.format({
-				html: function(){
-					resp.status(400).render('cadastro/cadastre', {validationErrors: errors, user: user});
-				},
-				json: function(){
-					resp.status(400).json(errors);
-				}
-			});
-
-			return;
-		}else{
-			var UserDAO = new app.infra.UserDAO(app);
-			UserDAO.create(user, function(erros, results){
-				user.id = results.insertId;
-
-				var response = {
-					user: user,
-					links: [
-						{
-							href: "http://localhost:3000/users/user/"+user.id,
-							method: "GET"
-						},
-						{
-							href: "http://localhost:3000/users/user/"+user.id,
-							rel:"update",
-							method:"PUT"
-						},
-						{
-							href: "http://localhost:3000/users/user/"+user.id,
-							rel:"delete",
-							method:"DELETE"
-						}
-					]
-				}
-
+			if(result.statusCode == 404){
 				resp.format({
 					html: function(){
-						resp.redirect('/');
+						resp.status(403).redirect('/cadastro');
 					},
 					json: function(){
-						resp.status(201).json(response);
+						resp.status(403).json('key not found');
 					}
 				});
-			});
-		}
+			}else{
+				var user = {
+					nick: body.nick,
+					password: body.password
+				}
+				req.assert('nick', 'Nickname obrigatorio!').notEmpty();
+				req.assert('password', 'Senha obrigatoria').notEmpty();
+		
+				const hash = crypto.createHash('sha256');
+				
+				hash.on('readable', function(){
+					const data = hash.read();
+					if(data){
+						user.password = data.toString('hex');
+					}
+				});
+		
+				hash.write(user.password);
+				hash.end();
+						
+		
+				var errors = req.validationErrors();
+				if(errors){
+					resp.format({
+						html: function(){
+							resp.status(400).render('cadastro/cadastre', {validationErrors: errors, user: user});
+						},
+						json: function(){
+							resp.status(400).json(errors);
+						}
+					});
+		
+					return;
+				}else{
+					var UserDAO = new app.infra.UserDAO(app);
+					UserDAO.create(user, function(erros, results){
+						user.id = results.insertId;
+		
+						var response = {
+							user: user,
+							links: [
+								{
+									href: "http://localhost:3000/users/user/"+user.id,
+									method: "GET"
+								},
+								{
+									href: "http://localhost:3000/users/user/"+user.id,
+									rel:"update",
+									method:"PUT"
+								},
+								{
+									href: "http://localhost:3000/users/user/"+user.id,
+									rel:"delete",
+									method:"DELETE"
+								}
+							]
+						}
+		
+						resp.format({
+							html: function(){
+								resp.redirect('/');
+							},
+							json: function(){
+								resp.status(201).json(response);
+							}
+						});
+					});
+				}
+			}
+		});
 	});
 
 

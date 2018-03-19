@@ -8,6 +8,16 @@
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
 
+	<style>
+		.errorMsg{
+			color:red;
+			float:right;
+		}
+
+		.hide{
+			display: none;
+		}
+	</style>
 </head>
 <body>
 	<div class="container">
@@ -17,12 +27,50 @@
 			<input type="text" name="nick" id="inputNick" class="form-control" placeholder="Nome de Usuário" required autofocus>
 			<label for="inputPassword" name="password">Senha:</label>
 			<input type="password" name="password" id="inputPassword" placeholder="senha" class="form-control" required>
+			<label for="inputPassword" name="password">Chave de Autenticação:</label><p class="errorMsg hide">Chave de Autenticação Não encontrada</p>
+			<input type="text" name="keyAuth" id="inputKeyAuth" placeholder="XXXXX-XXXXX-XXXXX" class="form-control" maxlength="17" required>
 
 			<center style="margin-top: 10px;">
-				<button class="btn btn-lg btn-primary" type="submit">Cadastrar</button>
+				<button class="btn btn-lg btn-primary"  type="submit">Cadastrar</button>
 			</center>
 		</form>
 	</div>
-	
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.js"></script>
+	<script>
+		jQuery(document).ready(function(){
+			jQuery('#inputKeyAuth').mask('AAAAA-AAAAA-AAAAA');
+
+			jQuery('#form-cadastro').on('submit', function(event){
+				event.preventDefault();
+
+				var nick = jQuery('#inputNick').val();
+				var password = jQuery('#inputPassword').val();
+				var keyAuth = jQuery('#inputKeyAuth').val();
+
+				console.log(nick);
+				console.log(password);
+				console.log(keyAuth);
+
+				jQuery.ajax({
+					type: 'POST',
+					url: '/users/user',
+					data: {nick: nick, password: password, keyAuth: keyAuth},
+					dataType: 'json',
+					success: function(response){
+						window.location = '/';
+					},
+					error: function(resp){
+						if(resp.status == '403'){
+							jQuery('.errorMsg').removeClass('hide');
+						}else{
+							alert('Ocorreu um erro ao cadastrar');
+							console.log(resp);
+						}
+					}
+				});
+			});
+		});
+	</script>	
 </body>
 </html>
